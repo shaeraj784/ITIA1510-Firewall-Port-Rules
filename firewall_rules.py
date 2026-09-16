@@ -69,6 +69,7 @@ def rule_for(port):
     #   ALLOW   everything else
     #   Build this out of the three functions above. It should not contain a
     #   single port number of its own.
+
     if is_valid_port(port) == False or is_cleartext(port) == True:
         return "BLOCK"
     elif port_range(port) == "dynamic":
