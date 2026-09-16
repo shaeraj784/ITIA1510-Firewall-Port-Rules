@@ -27,7 +27,10 @@ def is_valid_port(port):
     """True when port is a real port number, 1 through 65535."""
     # TODO 1
     #   Return whether port is at least 1 and no more than 65535.
-    return False
+    if port >= 1 and port <= 65535:
+        return True
+    else:
+        return False
 
 
 def port_range(port):
@@ -36,8 +39,15 @@ def port_range(port):
     #   Call is_valid_port first. When it says the port is not valid, return
     #   'invalid' -- do not repeat the 1 to 65535 test here.
     #   Otherwise use if / elif / else on the ranges in the table above.
-    return "invalid"
-
+    if not is_valid_port(port):
+        return "invalid"
+    elif port <= 1023:
+        return "well-known"
+    elif port <= 49151:
+        return "registered"
+    else:
+        return "dynamic"
+    
 
 def is_cleartext(port):
     """True for the services that send traffic unencrypted:
@@ -45,7 +55,10 @@ def is_cleartext(port):
     # TODO 3
     #   Compare port to each of the four numbers with == and join the
     #   comparisons with or. No lists this week.
-    return False
+    if port == 21 or port == 23 or port == 80 or port == 110:
+        return True
+    else:
+        return False
 
 
 def rule_for(port):
@@ -56,7 +69,14 @@ def rule_for(port):
     #   ALLOW   everything else
     #   Build this out of the three functions above. It should not contain a
     #   single port number of its own.
-    return "BLOCK"
+    if is_valid_port(port) == False or is_cleartext(port) == True:
+        return "BLOCK"
+    elif port_range(port) == "dynamic":
+        return "REVIEW"
+    elif is_valid_port(port) == True and port_range(port) != "dynamic" and port_range(port) != "invalid":
+        return "ALLOW"
+    else:
+        return "BLOCK"
 
 
 allowed = 0
@@ -66,13 +86,13 @@ blocked = 0
 print("=" * 54)
 print("FIREWALL PORT RULES")
 print("=" * 54)
-print("Enter a port number to check, or 'done' to finish.")
+print('Enter a port number to check, or press just Enter to finish.')
 print()
 
 while True:
     entry = input("Port: ")
 
-    if entry == "done":
+    if entry == "":
         break
 
     # A typo should not end the program. Count nothing and go back round.
@@ -88,6 +108,12 @@ while True:
 
     # TODO 5
     #   Add 1 to allowed, review or blocked, whichever matches decision.
+    if decision == "ALLOW":
+        allowed = allowed + 1
+    elif decision == "REVIEW":
+        review = review + 1
+    elif decision == "BLOCK":
+        blocked = blocked + 1
 
     print()
 
